@@ -1,0 +1,12 @@
+.vscode
+build/*
+test/build/*
+3rd
+3rd/*
+.vs
+.vs/*
+*/*.o
+*.o
+*.a
+*.lo
+autom4te.cache/
