@@ -43,13 +43,14 @@ typedef struct osip_authorization osip_authorization_t;
  */
 struct osip_authorization
 {
-  char *auth_type; /**< Authentication Type (Basic or Digest) */
-  char *username;  /**< login */
-  char *realm;     /**< realm (as a quoted-string) */
-  char *nonce;     /**< nonce */
-  char *uri;       /**< uri */
-  char *response;  /**< response */
-  char *digest;    /**< digest */
+  char *auth_type;  /**< Authentication Type (Basic or Digest) */
+  char *username;   /**< login */
+  char *realm;      /**< realm (as a quoted-string) */
+  char *nonce;      /**< nonce */
+  char *uri;        /**< uri */
+  char *response;   /**< response */
+  char *digest;     /**< digest */
+  char *keyversion; /**< keyversion */
   char *random1;
   char *random2;
   char *serverid;
@@ -255,6 +256,18 @@ extern "C"
    * @param value The value of the new parameter.
    */
   void osip_authorization_set_random1(osip_authorization_t *header, char *value);
+
+  /**
+   * Get value of the algorithm parameter from a Authorization element.
+   * @param header The element to work on.
+   */
+  char *osip_authorization_get_keyversion(osip_authorization_t *header);
+  /**
+   * Add the algorithm parameter from a Authorization element.
+   * @param header The element to work on.
+   * @param value The value of the new parameter.
+   */
+  void osip_authorization_set_keyversion(osip_authorization_t *header, char *value);
   /*****************************WARNING***********************/
 
   /**

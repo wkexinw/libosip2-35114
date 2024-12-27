@@ -44,7 +44,8 @@ int osip_message_set_authorization(osip_message_t *sip, const char *hvalue)
 {
   osip_authorization_t *authorization;
   int i;
-  printf("[%s:%d]authorization:%s\n", __FILE__, __LINE__, hvalue);
+  printf("[%s:%d] authorization:%s\n", __FILE__, __LINE__, hvalue);
+
   if (hvalue == NULL || hvalue[0] == '\0')
     return OSIP_SUCCESS;
 
@@ -104,7 +105,8 @@ int osip_authorization_parse(osip_authorization_t *auth, const char *hvalue)
 
     /***************************WARNING********************************/
 
-    i = __osip_quoted_string_set("keyversion", space, &(auth->auth_param), &next);
+    i = __osip_quoted_string_set("keyversion", space, &(auth->keyversion), &next);
+    printf("[%s:%d]keyversion: %s\n", __FILE__, __LINE__, auth->keyversion);
 
     if (i != 0)
       return i;
@@ -556,6 +558,17 @@ void osip_authorization_set_digest(osip_authorization_t *authorization, char *di
 }
 
 /***************************WARNING********************************/
+
+char *osip_authorization_get_keyversion(osip_authorization_t *authorization)
+{
+  return authorization->keyversion;
+}
+
+void osip_authorization_set_keyversion(osip_authorization_t *authorization, char *keyversion)
+{
+  authorization->keyversion = (char *)keyversion;
+}
+
 char *osip_authorization_get_random1(osip_authorization_t *authorization)
 {
   return authorization->random1;
@@ -771,6 +784,9 @@ int osip_authorization_to_str(const osip_authorization_t *auth, char **dest)
     len = len + strlen(auth->algorithm) + 12;
 
   /***********************WARNING***************************/
+  if (auth->keyversion != NULL)
+    len = len + strlen(auth->keyversion) + 13;
+
   if (auth->random1 != NULL)
     len = len + strlen(auth->random1) + 10;
 
@@ -891,6 +907,18 @@ int osip_authorization_to_str(const osip_authorization_t *auth, char **dest)
     /* !! domain-value must be a list of URI in a quoted string !! */
     tmp = osip_str_append(tmp, auth->digest);
   }
+
+  /***********************WARNING***************************/
+  if (auth->keyversion != NULL)
+  {
+    if (!first)
+      tmp = osip_strn_append(tmp, ",", 1);
+
+    first = 0;
+    tmp = osip_strn_append(tmp, " keyversion=", 12);
+    tmp = osip_str_append(tmp, auth->keyversion);
+  }
+  /**********************WARNING******************************/
 
   /***********************WARNING***************************/
   if (auth->random1 != NULL)
@@ -1084,6 +1112,7 @@ void osip_authorization_free(osip_authorization_t *authorization)
   osip_free(authorization->response);
   osip_free(authorization->digest);
   osip_free(authorization->random1);
+  osip_free(authorization->keyversion);
   osip_free(authorization->random2);
   osip_free(authorization->serverid);
   osip_free(authorization->deviceid);
@@ -1203,6 +1232,19 @@ int osip_authorization_clone(const osip_authorization_t *auth, osip_authorizatio
       return OSIP_NOMEM;
     }
   }
+
+  /***********************WARNING*************************/
+  if (auth->keyversion != NULL)
+  {
+    au->keyversion = osip_strdup(auth->keyversion);
+
+    if (auth->keyversion == NULL)
+    {
+      osip_authorization_free(au);
+      return OSIP_NOMEM;
+    }
+  }
+  /***********************WARNING*************************/
 
   /***********************WARNING*************************/
   if (auth->random1 != NULL)

@@ -209,16 +209,23 @@ int __osip_token_set(const char *name, const char *str, char **result, const cha
   if (osip_strncasecmp(name, str, strlen(name)) == 0)
   {
 
-    /**********************************WARNING****************************/
-    if (0)
-    {
-      if (!strcmp(name, "algorithm"))
-        str = str + strlen(str);
-    }
-    /**********************************WARNING****************************/
     const char *end;
 
-    end = strchr(str, ',');
+    const char *temp;
+    /***********************WARNING FOR 35114****************/
+
+    // if (!strcmp(name, "algorithm"))
+    // {
+    temp = strstr(str, ",");
+
+    if (NULL != temp && *(temp - 1) != '\"')
+    {
+      end = strstr(temp, "\"") + 1;
+    }
+    else
+    {
+      end = strchr(str, ',');
+    }
 
     if (end == NULL)
       end = str + strlen(str); /* This is the end of the header */
